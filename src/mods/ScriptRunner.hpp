@@ -305,6 +305,12 @@ public:
     // from any thread; the script runs inside on_frame. Returns false for an empty path.
     bool request_run_script(std::string path);
 
+    // Copies the last script error text (same text the ScriptRunner UI shows) into out,
+    // NUL-terminated and truncated to out_size - 1 bytes. Returns true when error text was
+    // copied; returns false when out is null, out_size is 0, or there is no error (out is then
+    // set to an empty string). Safe to call from any thread.
+    bool last_script_error(char* out, unsigned int out_size);
+
     lua_State* create_state() {
         std::scoped_lock _{m_access_mutex};
         m_states.emplace_back(std::make_shared<ScriptState>(make_gc_data(), false));

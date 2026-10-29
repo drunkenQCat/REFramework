@@ -1188,6 +1188,24 @@ void ScriptRunner::spew_error(const std::string& p) {
     m_last_script_error_time = std::chrono::system_clock::now();
 }
 
+bool ScriptRunner::last_script_error(char* out, unsigned int out_size) {
+    if (out == nullptr || out_size == 0) {
+        return false;
+    }
+
+    std::shared_lock _{ m_script_error_mutex };
+
+    if (m_last_script_error.empty()) {
+        out[0] = '\0';
+        return false;
+    }
+
+    const auto available = static_cast<size_t>(out_size) - 1;
+    const auto len = m_last_script_error.copy(out, available);
+    out[len] = '\0';
+    return true;
+}
+
 
 bool ScriptRunner::request_run_script(std::string path) {
     if (path.empty()) {

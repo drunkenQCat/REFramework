@@ -100,6 +100,12 @@ typedef struct {
        through the usual ScriptRunner error channel. Safe to call from any thread. Returns false if
        path was null or empty. Check for nullptr before calling on older builds. */
     bool (*run_script)(const char* path);
+
+    /* Copies the last ScriptRunner error text into out, NUL-terminated and truncated to
+       out_size - 1 bytes. Returns true when error text was copied; false when out is null,
+       out_size is 0, or there is no error (out is then set to an empty string). Safe to call
+       from any thread. Check for nullptr before calling on older builds. */
+    bool (*last_script_error)(char* out, unsigned int out_size);
 } REFrameworkPluginFunctions;
 
 typedef struct {
