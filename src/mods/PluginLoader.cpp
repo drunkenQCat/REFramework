@@ -73,6 +73,7 @@ REFrameworkPluginFunctions g_plugin_functions {
     reframework_on_imgui_frame,
     reframework_on_imgui_draw_ui,
     reframework_request_script_reset,
+    reframework_run_script,
 };
 
 REFrameworkSDKFunctions g_sdk_functions {
@@ -876,6 +877,14 @@ void reframework_request_script_reset() {
     if (auto& runner = ScriptRunner::get(); runner != nullptr) {
         runner->request_script_reset();
     }
+}
+
+bool reframework_run_script(const char* path) {
+    if (path == nullptr) {
+        return false;
+    }
+
+    return ScriptRunner::get()->request_run_script(path);
 }
 
 bool reframework_on_device_reset(REFOnDeviceResetCb cb) {

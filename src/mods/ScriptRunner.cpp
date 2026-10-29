@@ -921,6 +921,23 @@ void ScriptRunner::on_frame() {
         reset_scripts();
     }
 
+    {
+        // Run scripts requested via the plugin API (same as the "Run script" UI button).
+        std::deque<std::string> scripts_to_run{};
+
+        {
+            std::scoped_lock _{m_script_requests_mutex};
+            scripts_to_run = std::move(m_scripts_to_run);
+            m_scripts_to_run.clear();
+        }
+
+        for (const auto& path : scripts_to_run) {
+            spdlog::info("[ScriptRunner] Running script requested via plugin API: {}", path);
+            m_main_state->run_script(path);
+            m_loaded_scripts.emplace_back(std::filesystem::path{path}.filename().string());
+        }
+    }
+
     for (auto state_to_delete : m_states_to_delete) {
         std::erase_if(m_states, [&](std::shared_ptr<ScriptState> state) { return state->lua().lua_state() == state_to_delete; });
     }
@@ -1171,6 +1188,16 @@ void ScriptRunner::spew_error(const std::string& p) {
     m_last_script_error_time = std::chrono::system_clock::now();
 }
 
+
+bool ScriptRunner::request_run_script(std::string path) {
+    if (path.empty()) {
+        return false;
+    }
+
+    std::scoped_lock _{m_script_requests_mutex};
+    m_scripts_to_run.emplace_back(std::move(path));
+    return true;
+}
 
 void ScriptRunner::reset_scripts() {
     auto do_not_hook_d3d = g_framework->acquire_do_not_hook_d3d();

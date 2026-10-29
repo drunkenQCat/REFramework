@@ -300,6 +300,11 @@ public:
         m_script_reset_requested = true;
     }
 
+    // Requests that the lua script at the given path be executed on the game thread in the main
+    // script state (same as the "Run script" UI button, without the file dialog). Safe to call
+    // from any thread; the script runs inside on_frame. Returns false for an empty path.
+    bool request_run_script(std::string path);
+
     lua_State* create_state() {
         std::scoped_lock _{m_access_mutex};
         m_states.emplace_back(std::make_shared<ScriptState>(make_gc_data(), false));
@@ -350,6 +355,8 @@ private:
     bool m_console_spawned{false};
     bool m_needs_first_reset{true};
     std::atomic<bool> m_script_reset_requested{false};
+    std::mutex m_script_requests_mutex{};
+    std::deque<std::string> m_scripts_to_run{};
     bool m_last_online_match_state{false};
     bool m_attempted_hook_battle_rule{false};
     std::optional<uint8_t> m_last_battle_type{};
