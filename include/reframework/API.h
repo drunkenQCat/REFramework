@@ -88,6 +88,11 @@ typedef struct {
 
     REFOnImGuiFrameFn on_imgui_frame;
     REFOnImGuiDrawUIFn on_imgui_draw_ui;
+
+    /* Requests that all scripts get reloaded (same as pressing "Reset scripts" in the ScriptRunner UI).
+       The reset is performed on the next game frame. Safe to call from any thread.
+       Added after the initial release; check for nullptr before calling on older builds. */
+    void (*request_script_reset)();
 } REFrameworkPluginFunctions;
 
 typedef struct {

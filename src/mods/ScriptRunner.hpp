@@ -294,6 +294,12 @@ public:
         }
     }
 
+    // Requests that all scripts be reloaded on the next frame (same as "Reset scripts" in the UI).
+    // Safe to call from any thread; the reset itself runs on the game thread inside on_frame.
+    void request_script_reset() {
+        m_script_reset_requested = true;
+    }
+
     lua_State* create_state() {
         std::scoped_lock _{m_access_mutex};
         m_states.emplace_back(std::make_shared<ScriptState>(make_gc_data(), false));
@@ -343,6 +349,7 @@ private:
     bool m_scene_okay{false};
     bool m_console_spawned{false};
     bool m_needs_first_reset{true};
+    std::atomic<bool> m_script_reset_requested{false};
     bool m_last_online_match_state{false};
     bool m_attempted_hook_battle_rule{false};
     std::optional<uint8_t> m_last_battle_type{};

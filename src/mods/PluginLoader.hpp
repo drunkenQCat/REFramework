@@ -15,6 +15,7 @@ bool reframework_on_pre_application_entry(const char* name, REFOnPreApplicationE
 bool reframework_on_post_application_entry(const char* name, REFOnPostApplicationEntryCb cb);
 void reframework_lock_lua();
 void reframework_unlock_lua();
+void reframework_request_script_reset();
 bool reframework_on_device_reset(REFOnDeviceResetCb cb);
 bool reframework_on_message(REFOnMessageCb cb);
 bool reframework_on_imgui_frame(REFOnImGuiFrameCb cb);

@@ -72,6 +72,7 @@ REFrameworkPluginFunctions g_plugin_functions {
 
     reframework_on_imgui_frame,
     reframework_on_imgui_draw_ui,
+    reframework_request_script_reset,
 };
 
 REFrameworkSDKFunctions g_sdk_functions {
@@ -869,6 +870,12 @@ void reframework_lock_lua() {
 
 void reframework_unlock_lua() {
     ScriptRunner::get()->unlock();
+}
+
+void reframework_request_script_reset() {
+    if (auto& runner = ScriptRunner::get(); runner != nullptr) {
+        runner->request_script_reset();
+    }
 }
 
 bool reframework_on_device_reset(REFOnDeviceResetCb cb) {

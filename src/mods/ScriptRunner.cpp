@@ -916,6 +916,11 @@ void ScriptRunner::on_frame() {
         spdlog::info("[ScriptRunner] Lua state initialized.");
     }
 
+    if (m_script_reset_requested.exchange(false)) {
+        spdlog::info("[ScriptRunner] Script reset requested via plugin API...");
+        reset_scripts();
+    }
+
     for (auto state_to_delete : m_states_to_delete) {
         std::erase_if(m_states, [&](std::shared_ptr<ScriptState> state) { return state->lua().lua_state() == state_to_delete; });
     }
